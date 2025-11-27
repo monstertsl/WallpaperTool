@@ -1,7 +1,7 @@
 
 ---
 
-# 🖼️ WatermarkApp - 桌面水印工具
+# 🖼️ IpWallpaper - 桌面水印工具
 
 > 一款轻量级 Windows 桌面系统信息水印工具，可自动将主机名、IP 地址、MAC 地址等信息作为水印叠加到当前壁纸上，并支持一键还原。
 
@@ -128,3 +128,4 @@ Created with ❤️ for IT administrators and security-conscious users.
 
 
 ---
+
