@@ -26,7 +26,7 @@
   - GUI 中提供“还原壁纸”按钮，一键恢复。
 - **高分辨率适配**：
   - 字体大小随屏幕高度动态调整。
-  - 支持中文（使用 `simhei.ttf` 黑体），兼容性好。
+  - 支持中文（使用 `simhei.ttf` 微软雅黑），兼容性好。
   - 自动缩放字体以防止文本溢出屏幕。
 
 ---
@@ -50,13 +50,13 @@
 在 CMD 或 PowerShell 中运行：
 
 ```cmd
-main.exe -q
+WallpaperTool -q
 ```
 
 或
 
 ```cmd
-main.exe /q
+WallpaperTool /q
 ```
 
 > ⚠️ 注意：静默模式会使用全部信息（主机名 + IP + MAC），且无备注。
