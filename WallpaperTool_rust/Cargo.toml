@@ -21,3 +21,10 @@ windows = { version = "0.58", features = [
 
 [build-dependencies]
 embed-resource = "2.5"
+
+[profile.release]
+opt-level = "z"      # 优先优化体积，而不是速度 (默认为 3 优化速度)
+lto = true           # 启用链接时优化 (Link Time Optimization)，大幅去除死代码
+codegen-units = 1    # 允许更激进的优化，但编译变慢
+panic = "abort"      # 遇到 panic 直接终止，不展开堆栈信息 (节省大量空间)
+strip = true         # 自动剥离调试符号 (Rust 1.59+ 支持)
