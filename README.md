@@ -39,6 +39,12 @@
 
 ![demo.png](./demo.png)
 
+## 📦 使用Rust重构
+
+使用Rust重构，更加现代化的GUI支持 深/浅主题 启动速度更快！！！运行速度更快！！！
+建议优先使用Rust版，Rust版不兼容win7，如果老系统使用请使用Python版
+![demo_rust.png](./demo_rust.png)
+
 ### 2. 静默模式（命令行）
 
 在 CMD 或 PowerShell 中运行：
@@ -68,10 +74,6 @@ main.exe /q
 
 ---
 
-## 📦 使用Rust重构
-
-使用Rust重构，启动速度更快！！！运行速度更快！！！
-建议优先使用Rust版，Rust版不兼容win7，如果老系统使用请使用Python版
 
 ## 📁 文件结构说明
 

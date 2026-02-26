@@ -455,7 +455,43 @@ fn main() -> Result<(), eframe::Error> {
     let font_data = fs::read("C:\\Windows\\Fonts\\msyh.ttc")
         .or_else(|_| fs::read("C:\\Windows\\Fonts\\simhei.ttf"))
         .expect("Font not found");
+
     let drawing_font = Arc::new(Font::try_from_vec(font_data.clone()).unwrap());
+
+    // ========================
+    // 新增：静默模式逻辑
+    // ========================
+    let args: Vec<String> = env::args().collect();
+    // 检查参数中是否包含 q, -q, 或 /q
+    if args.iter().any(|arg| arg == "-q" || arg == "/q" || arg == "q") {
+        
+        // 1. 获取网络信息 (带异常兜底)
+        let mut info = get_network_info().unwrap_or_else(|_| {
+            NetworkInfo {
+                user_path: env::var("USERPROFILE").unwrap_or_default(),
+                hostname: env::var("COMPUTERNAME").unwrap_or_default(),
+                ..Default::default()
+            }
+        });
+
+        if info.user_path.is_empty() {
+            info.user_path = env::var("USERPROFILE").unwrap_or_else(|_| r"C:\".to_string());
+        }
+
+        // 2. 设置默认选项 (默认显示 IP、MAC、主机名)
+        let default_options = WatermarkOptions { 
+            show_ip: true, 
+            show_mac: true, 
+            show_hostname: true, 
+            remark: String::new() 
+        };
+
+        // 3. 执行水印绘制与应用
+        let _ = create_watermark(&info, &default_options, &drawing_font);
+        
+        // 4. 静默结束，直接退出程序
+        return Ok(());
+    }
 
     let icon_data = include_bytes!("./ip.png"); 
     let icon = image::load_from_memory(icon_data)
