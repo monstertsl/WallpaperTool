@@ -179,15 +179,15 @@ fn create_watermark(info: &NetworkInfo, options: &WatermarkOptions, font: &Font)
         fs::create_dir_all(&output_dir)?;
     }
 
-    // 3. 备份逻辑
-    if !backup_path.exists() && wallpaper_path.exists() {
-        let _ = fs::copy(&wallpaper_path, &backup_path);
+    // 3. 备份原壁纸
+    if !wallpaper_path.exists() {
+        return Err("未找到系统壁纸 (TranscodedWallpaper)。请确保使用图片壁纸。".into());
     }
+    fs::copy(&wallpaper_path, &backup_path)?; 
 
-    // 优先从备份读取，避免文件锁定问题
-    let source_path = if backup_path.exists() { &backup_path } else { &wallpaper_path };
-    let img_data = fs::read(source_path).map_err(|e| {
-        format!("无法读取壁纸源文件：{}。请确保您当前使用的是图片壁纸。", e)
+    // 直接读取系统文件，确保水印基于最新壁纸
+    let img_data = fs::read(&wallpaper_path).map_err(|e| {
+        format!("无法读取壁纸：{}。若报错“被占用”，请稍后重试。", e)
     })?;
 
     // 4. 准备文本行
