@@ -83,7 +83,7 @@ def create_watermark(info, options, remark=""):
         
         # 备份当前壁纸（使用文件拷贝，保留带时间戳的历史备份并更新 latest 备份）
         try:
-            backup_path = os.path.join(Userpath, "IpWallpaper")
+            backup_path = os.path.join(Userpath, "WallpaperTool")
             os.makedirs(backup_path, exist_ok=True)
             backup_file_latest = os.path.join(backup_path, "Wallpaper_Backup.jpg")
             # 仅保留最新备份，直接覆盖同名文件
@@ -156,7 +156,7 @@ def create_watermark(info, options, remark=""):
         draw.text((x, y), watermark_text, font=font, fill=(255, 255, 255))
 
         # 保存
-        img_path = os.path.join(Userpath, "IpWallpaper")
+        img_path = os.path.join(Userpath, "WallpaperTool")
         os.makedirs(img_path, exist_ok=True)
         output_path = os.path.join(img_path, "Wallpaper_Watermark.jpg")
         img.save(output_path, quality=95)
@@ -222,7 +222,7 @@ class WatermarkApp:
 
     def restore_backup(self):
         """将壁纸还原为备份的壁纸文件（覆盖系统当前壁纸）。"""
-        backup_file = os.path.join(os.path.expanduser("~"), "IpWallpaper", "Wallpaper_Backup.jpg")
+        backup_file = os.path.join(os.path.expanduser("~"), "WallpaperTool", "Wallpaper_Backup.jpg")
         if not os.path.exists(backup_file):
             messagebox.showwarning("还原失败", f"未找到备份文件：{backup_file}")
             self.status_var.set("未找到备份")

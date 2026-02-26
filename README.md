@@ -1,9 +1,9 @@
 
 ---
 
-# 🖼️ IpWallpaper - 桌面水印工具
+# WallpaperTool - 桌面水印工具
 
-> 一款轻量级 Windows 桌面系统信息水印工具，可自动将主机名、IP 地址、MAC 地址等信息作为水印叠加到当前壁纸上，并支持一键还原。
+> 一款轻量级 Windows (Python版兼容win7，Rust版不兼容win7) 桌面系统信息水印工具，可自动将主机名、IP 地址、MAC 地址等信息作为水印叠加到当前壁纸上，并支持一键还原。
 
 ---
 
@@ -44,13 +44,13 @@
 在 CMD 或 PowerShell 中运行：
 
 ```cmd
-watermark.exe -q
+main.exe -q
 ```
 
 或
 
 ```cmd
-watermark.exe /q
+main.exe /q
 ```
 
 > ⚠️ 注意：静默模式会使用全部信息（主机名 + IP + MAC），且无备注。
@@ -63,7 +63,7 @@ watermark.exe /q
 - 在 GUI 中点击【还原壁纸】按钮；或
 - 手动将以下文件设为壁纸：
   ```
-  %USERPROFILE%\IpWallpaper\Wallpaper_Backup.jpg
+  %USERPROFILE%\WallpaperTool\Wallpaper_Backup.jpg
   ```
 
 ---
@@ -97,7 +97,7 @@ pyinstaller --onefile --windowed --icon=app.ico watermark.py
 程序运行后会在用户目录下创建：
 
 ```
-%USERPROFILE%\IpWallpaper\
+%USERPROFILE%\WallpaperTool\
 ├── Wallpaper_Backup.jpg    ← 原始壁纸备份（覆盖更新）
 └── Wallpaper_Watermark.jpg ← 带水印的新壁纸
 ```
@@ -123,7 +123,7 @@ pyinstaller --onefile --windowed --icon=app.ico watermark.py
 
 Created with ❤️ for IT administrators and security-conscious users.
 
-> 源代码：[https://github.com/monstertsl/IpWallpaper]  
+> 源代码：[https://github.com/monstertsl/WallpaperTool]  
 > 版本：v1.0.0
 
 
