@@ -5,6 +5,7 @@ import pythoncom
 import tkinter as tk
 from tkinter import messagebox
 import requests
+import webbrowser
 
 
 def get_network_info():
@@ -214,8 +215,18 @@ class WatermarkApp:
         # 状态栏
         self.status_var = tk.StringVar(value="就绪")
         status_frame = tk.Frame(self.root)
-        status_frame.pack(fill="x", padx=10)
-        tk.Label(status_frame, textvariable=self.status_var, anchor="w").pack(fill="x")
+        status_frame.pack(fill="x", padx=(5, 0))
+        
+        tk.Label(status_frame, textvariable=self.status_var, anchor="w").pack(side="left", fill="x", expand=True)
+
+        tk.Button(
+            status_frame, 
+            text="关于", 
+            command=lambda: __import__("webbrowser").open("https://github.com/monstertsl/WallpaperTool"), 
+            fg="blue",
+            bd=0,
+            relief="flat"
+        ).pack(side="right")
 
     def clear_all(self):
         self.ip_var.set(False)

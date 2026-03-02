@@ -19,9 +19,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 use wmi::{COMLibrary, WMIConnection};
 use serde::Deserialize;
 
-// ========================
 // 数据结构
-// ========================
 
 #[derive(Clone, Default)]
 struct NetworkInfo {
@@ -40,9 +38,7 @@ struct WatermarkOptions {
 }
 
 
-// ========================
 // 逻辑函数
-// ========================
 
 fn get_network_info() -> Result<NetworkInfo, Box<dyn std::error::Error>> {
     let com_con = COMLibrary::new()?;
@@ -282,16 +278,16 @@ fn create_watermark(info: &NetworkInfo, options: &WatermarkOptions, font: &Font)
     
     Ok(())
 }
-// ========================
+
 // GUI 应用
-// ========================
+
 
 struct WatermarkApp {
     options: WatermarkOptions,
     status: Arc<Mutex<String>>,
     drawing_font: Arc<Font<'static>>,
     exit_timer: Option<Instant>,
-    network_info: NetworkInfo, // 现在这个字段会被真正使用了
+    network_info: NetworkInfo,
 }
 
 impl WatermarkApp {
@@ -361,12 +357,22 @@ impl eframe::App for WatermarkApp {
             ui.horizontal(|ui| {
                 if ui.button("应用").clicked() {
                     self.exit_timer = None;
+                    
+                    // === 核心修复：防止空选项应用 ===
+                    if !self.options.show_ip 
+                        && !self.options.show_mac 
+                        && !self.options.show_hostname 
+                        && self.options.remark.trim().is_empty() 
+                    {
+                        *self.status.lock().unwrap() = "错误：请至少勾选一项信息或填写备注".to_string();
+                        return; // 阻止线程启动
+                    }
                     let status = Arc::clone(&self.status);
                     let opts = self.options.clone();
                     let font_clone = Arc::clone(&self.drawing_font);
                     let ctx_clone = ctx.clone();
                     
-                    // 🚀 核心优化：检查预加载数据是否有效
+                    // 检查预加载数据是否有效
                     // 如果预加载的 IP 或 MAC 不为空（且不是提示文字），则直接使用，跳过 WMI 查询（极速）
                     let has_valid_data = self.network_info.ip_addresses.iter().any(|ip| !ip.contains("未发现"))
                                       || self.network_info.mac_addresses.iter().any(|mac| !mac.contains("未发现"));
@@ -458,9 +464,7 @@ fn main() -> Result<(), eframe::Error> {
 
     let drawing_font = Arc::new(Font::try_from_vec(font_data.clone()).unwrap());
 
-    // ========================
-    // 新增：静默模式逻辑
-    // ========================
+    // 静默模式逻辑
     let args: Vec<String> = env::args().collect();
     // 检查参数中是否包含 q, -q, 或 /q
     if args.iter().any(|arg| arg == "-q" || arg == "/q" || arg == "q") {
