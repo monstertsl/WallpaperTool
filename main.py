@@ -36,15 +36,27 @@ def get_network_info():
                 if not ip_addr.startswith("fe80"):  # 排除 IPv6 链路本地地址
                     IPAddress.append(ip_addr.strip())
 
+     # --- 新增获取 NAT地址 ---
+    NATAddress = None
+    try:
+        # 注意：这里直接请求，如果需要控制是否请求，可以在调用此函数前判断，或增加参数
+        # 为了保持函数纯净，这里默认尝试获取，失败则返回 None
+        resp = requests.get("http://10.10.168.197/api/ip", timeout=5)
+        NATAddress = resp.json().get("ip")
+    except Exception:
+        # 获取失败静默处理，返回 None，由上层逻辑决定是否提示
+        NATAddress = None
+
     return {
         'Hostname': Hostname,
         'IPAddress': IPAddress,
+        'NATAddress': NATAddress,
         'MACAddress': MAClist,
         'Userpath': Userpath
     }
 
 
-def create_watermark(info, options, remark="",nat_ip=None):
+def create_watermark(info, options, remark=""):
     """将指定信息作为水印写入当前壁纸并设为桌面背景"""
     try:
         # 构建水印文本
@@ -56,6 +68,8 @@ def create_watermark(info, options, remark="",nat_ip=None):
         if options.get('ip', True) and info['IPAddress']:
             info_lines.append(f"IP地址:   {info['IPAddress'][0]}")
             info_lines.extend([f"    {ip}" for ip in info['IPAddress'][1:]])
+
+            nat_ip = info.get('NATAddress')
             if nat_ip and nat_ip not in info['IPAddress']:
                 info_lines.append(f"NAT地址:  {nat_ip}")
 
@@ -311,22 +325,15 @@ class WatermarkApp:
                     return
                 
                 # 显示NAT IP功能
-                nat_ip = None
-                if options.get('ip', True):
-                    try:
-                        # 接口可参考https://github.com/monstertsl/NetworkTools或自行开发
-                        resp = requests.get("http://10.10.168.197/api/ip", timeout=5)
-                        nat_ip = resp.json()["ip"]
-                    except Exception:
-                        # 获取失败：弹出你指定的错误窗口（通过主线程）
-                        error_msg = (
-                            "获取 上网地址失败，请检查：\n"
-                            "1. 本地网络是否正常；\n"
-                            "2. 远端服务 http://10.10.168.197 是否可访问。"
-                        )
-                        # 如果想屏蔽这个功能直接注释掉这个报错就行这样无接口也不会影响运行
-                        self.root.after(0, lambda: messagebox.showinfo("错误", error_msg))
-                create_watermark(info, options, remark,nat_ip)
+                if options.get('ip', True) and info.get('NATAddress') is None:
+                    error_msg = (
+                        "获取 上网地址失败，请检查：\n"
+                        "1. 本地网络是否正常；\n"
+                        "2. 远端服务 http://10.10.168.197 是否可访问。"
+                    )
+                    # 如果想屏蔽这个功能直接注释掉这个报错就行这样无接口也不会影响运行
+                    self.root.after(0, lambda: messagebox.showinfo("错误", error_msg))
+                create_watermark(info, options, remark)
             finally:
                 try:
                     pythoncom.CoUninitialize()
