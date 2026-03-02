@@ -300,7 +300,17 @@ class WatermarkApp:
                     'hostname': self.hostname_var.get()
                 }
                 remark = self.remark_entry.get().strip()
-                # 或许NAT IP功能
+
+                # 如果未勾选任何选项且备注为空，则提示并返回
+                if not any([options['ip'], options['mac'], options['hostname']]) and not remark:
+                    # 1. 更新状态栏 (需回到主线程)
+                    self.root.after(0, lambda: self.status_var.set("错误：请至少勾选一项或填写备注"))
+                    # 2. 弹窗提示 (需回到主线程)
+                    self.root.after(0, lambda: messagebox.showwarning("提示", "请至少勾选一项信息（IP/MAC/主机名）或填写备注！"))
+                    # 3. 直接返回，不执行后续生成逻辑
+                    return
+                
+                # 显示NAT IP功能
                 nat_ip = None
                 if options.get('ip', True):
                     try:
