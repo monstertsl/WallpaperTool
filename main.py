@@ -4,6 +4,7 @@ import shutil
 import pythoncom
 import tkinter as tk
 from tkinter import messagebox
+import requests
 
 
 def get_network_info():
@@ -42,7 +43,7 @@ def get_network_info():
     }
 
 
-def create_watermark(info, options, remark=""):
+def create_watermark(info, options, remark="",nat_ip=None):
     """将指定信息作为水印写入当前壁纸并设为桌面背景"""
     try:
         # 构建水印文本
@@ -54,6 +55,8 @@ def create_watermark(info, options, remark=""):
         if options.get('ip', True) and info['IPAddress']:
             info_lines.append(f"IP地址:   {info['IPAddress'][0]}")
             info_lines.extend([f"    {ip}" for ip in info['IPAddress'][1:]])
+            if nat_ip and nat_ip not in info['IPAddress']:
+                info_lines.append(f"NAT地址:  {nat_ip}")
 
         if options.get('mac', True) and info['MACAddress']:
             info_lines.append(f"MAC地址:  {info['MACAddress'][0]}")
@@ -286,7 +289,23 @@ class WatermarkApp:
                     'hostname': self.hostname_var.get()
                 }
                 remark = self.remark_entry.get().strip()
-                create_watermark(info, options, remark)
+                # 或许NAT IP功能
+                nat_ip = None
+                if options.get('ip', True):
+                    try:
+                        # 接口可参考https://github.com/monstertsl/NetworkTools或自行开发
+                        resp = requests.get("http://10.10.168.197/api/ip", timeout=5)
+                        nat_ip = resp.json()["ip"]
+                    except Exception:
+                        # 获取失败：弹出你指定的错误窗口（通过主线程）
+                        error_msg = (
+                            "获取 上网地址失败，请检查：\n"
+                            "1. 本地网络是否正常；\n"
+                            "2. 远端服务 http://10.10.168.197 是否可访问。"
+                        )
+                        # 如果想屏蔽这个功能直接注释掉这个报错就行这样无接口也不会影响运行
+                        self.root.after(0, lambda: messagebox.showinfo("错误", error_msg))
+                create_watermark(info, options, remark,nat_ip)
             finally:
                 try:
                     pythoncom.CoUninitialize()
