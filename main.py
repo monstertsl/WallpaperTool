@@ -4,9 +4,9 @@ import shutil
 import pythoncom
 import tkinter as tk
 from tkinter import messagebox
-import requests
 import webbrowser
-
+import urllib.request
+import json
 
 def get_network_info():
     """获取主机名、IP、MAC地址等信息"""
@@ -39,10 +39,10 @@ def get_network_info():
      # --- 新增获取 NAT地址 ---
     NATAddress = None
     try:
-        # 注意：这里直接请求，如果需要控制是否请求，可以在调用此函数前判断，或增加参数
         # 为了保持函数纯净，这里默认尝试获取，失败则返回 None
-        resp = requests.get("http://10.10.168.197/api/ip", timeout=5)
-        NATAddress = resp.json().get("ip")
+        # 接口可参考https://github.com/monstertsl/NetworkTools或自行开发或接入其他服务，接口地址和返回格式需与此处代码保持一致
+        with urllib.request.urlopen("http://10.10.168.197/api/ip", timeout=5) as r:
+            NATAddress = json.loads(r.read().decode('utf-8')).get("ip")
     except Exception:
         # 获取失败静默处理，返回 None，由上层逻辑决定是否提示
         NATAddress = None
